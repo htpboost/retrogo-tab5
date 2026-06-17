@@ -74,6 +74,11 @@ static inline void lcd_send_buffer(uint16_t *buffer, size_t length)
         xQueueSend(s_buffers, &buffer, portMAX_DELAY);
         return;
     }
+    // retro-go GUI は RGB565 をビッグエンディアン(SPIパネル向けにバイト入替)で合成するが、
+    // MIPI-DSI DPI フレームバッファはネイティブ(LE)。送出前にバイトスワップして色を合わせる。
+    for (size_t i = 0; i < length; i++)
+        buffer[i] = (uint16_t)((buffer[i] >> 8) | (buffer[i] << 8));
+
     // retro-go は常に「幅の整数倍」=丸ごとの行を送ってくる
     int lines = (int)length / s_win_w;
     int y0 = s_win_y + s_win_line;
