@@ -8,7 +8,6 @@ idf_component_register(
         driver
         esp_lcd
         esp_codec_dev
-        esp_lvgl_port
         esp_lcd_ili9881c
         esp_lcd_touch_st7123
         esp_lcd_touch_gt911

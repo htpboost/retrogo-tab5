@@ -8,6 +8,11 @@ else() # esp-idf 4.1 - 4.4
     set(COMPONENT_REQUIRES "spi_flash fatfs app_update esp_adc_cal json nvs_flash esp_wifi esp_http_client")
 endif()
 
+# Tab5: MIPI-DSI 表示ドライバ(drivers/display/tab5_dsi.h)は公式 m5stack_tab5 BSP に依存
+if("${RG_BUILD_TARGET}" STREQUAL "RG_TARGET_TAB5")
+    set(COMPONENT_REQUIRES "${COMPONENT_REQUIRES} esp_lcd m5stack_tab5")
+endif()
+
 register_component()
 
 # Small size is preferred because of the small cache and most things here aren't performance sensitive!

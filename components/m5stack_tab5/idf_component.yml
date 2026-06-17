@@ -5,11 +5,9 @@
 # - 音声: esp_codec_dev(ES8388/ES7210)
 # - 入力(Phase2): usb_host_hid
 # - LVGL: bsp_display_start系で使用。我々は bsp_display_new_with_handles(非LVGL)を使うが、
-#         コード未改変で通すため esp_lvgl_port を宣言(lvglは推移的に解決)。
 dependencies:
   espressif/esp_lcd_ili9881c: "^1.0.0"
   espressif/esp_lcd_touch_gt911: "^1.1.1~2"
   espressif/esp_lcd_touch_st7123: "^1.0.0"
   espressif/esp_codec_dev: "^1.3.0"
   espressif/usb_host_hid: "^1.0.3"
-  espressif/esp_lvgl_port: "^2.5.0"

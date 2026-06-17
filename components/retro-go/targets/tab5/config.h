@@ -63,11 +63,12 @@
 /****************************************************************************
  * Video                                                                    *
  ****************************************************************************/
-// Tab5: MIPI-DSI パネル。実初期化は drivers/display/tab5_dsi.h が公式BSP(bsp_display_new)で行う。
-// パネル native は 720x1280 縦・RGB565・2レーン/730Mbps。横向き1280x720はtab5_dsiで回転。
+// Tab5: MIPI-DSI パネル。実初期化は drivers/display/tab5_dsi.h が公式BSP(bsp_display_new_auto)で行う。
+// パネル native は 720x1280 縦・RGB565・2レーン/730Mbps。
+// Phase1 は native の縦 720x1280 のまま描画(回転なし)。横向き1280x720化は後続フェーズ。
 #define RG_SCREEN_DRIVER            2   // 2 = Tab5 MIPI-DSI (m5stack_tab5 BSP)
-#define RG_SCREEN_WIDTH             1280
-#define RG_SCREEN_HEIGHT            720
+#define RG_SCREEN_WIDTH             720
+#define RG_SCREEN_HEIGHT            1280
 #define RG_SCREEN_BACKLIGHT         1
 #define RG_SCREEN_ROTATE            0
 #define RG_SCREEN_VISIBLE_AREA      {0, 0, 0, 0}  // Left, Top, Right, Bottom

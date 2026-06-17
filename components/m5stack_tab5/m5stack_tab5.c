@@ -1485,6 +1485,16 @@ esp_err_t bsp_touch_new(const bsp_touch_config_t* config, esp_lcd_touch_handle_t
     return esp_lcd_touch_new_i2c_gt911(tp_io_handle, &tp_cfg, ret_touch);
 }
 
+/* retro-go: 表示IC(ILI9881C/ST7123/ST7121)を自動検出し非LVGLパスで初期化 */
+esp_err_t bsp_display_new_auto(const bsp_display_config_t* config, bsp_lcd_handles_t* ret_handles)
+{
+    bsp_display_type_t t = bsp_detect_display_type();
+    if (t == BSP_DISPLAY_TYPE_ST7123 || t == BSP_DISPLAY_TYPE_ST7121) {
+        return bsp_display_new_with_handles_to_st7123(config, ret_handles);
+    }
+    return bsp_display_new_with_handles(config, ret_handles);
+}
+
 #if (BSP_CONFIG_NO_GRAPHIC_LIB == 0)
 static lv_display_t* bsp_display_lcd_init(const bsp_display_cfg_t* cfg)
 {
