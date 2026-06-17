@@ -1,16 +1,13 @@
 set(COMPONENT_SRCDIRS ". drivers/audio fonts libs/netplay libs/lodepng")
 set(COMPONENT_ADD_INCLUDEDIRS ". libs/netplay libs/lodepng")
 if((IDF_VERSION_MAJOR EQUAL 5) AND (IDF_VERSION_MINOR GREATER 2)) # esp-idf 5.3+
-    set(COMPONENT_REQUIRES "spi_flash fatfs app_update json nvs_flash esp_adc esp_timer esp_psram esp_wifi esp_http_client esp_driver_ledc driver")
+    # 末尾の esp_lcd / m5stack_tab5 は Tab5(ESP32-P4) の MIPI-DSI 表示ドライバ(tab5_dsi.h)用。
+    # (条件付き追加は IDF の早期依存展開で拾われないため静的に列挙。対象はP4ターゲットのみ)
+    set(COMPONENT_REQUIRES "spi_flash fatfs app_update json nvs_flash esp_adc esp_timer esp_psram esp_wifi esp_http_client esp_driver_ledc driver esp_lcd m5stack_tab5")
 elseif(IDF_VERSION_MAJOR EQUAL 5) # esp-idf 5.0 - 5.2
     set(COMPONENT_REQUIRES "spi_flash fatfs app_update json nvs_flash esp_adc esp_timer esp_psram esp_wifi esp_http_client")
 else() # esp-idf 4.1 - 4.4
     set(COMPONENT_REQUIRES "spi_flash fatfs app_update esp_adc_cal json nvs_flash esp_wifi esp_http_client")
-endif()
-
-# Tab5: MIPI-DSI 表示ドライバ(drivers/display/tab5_dsi.h)は公式 m5stack_tab5 BSP に依存
-if("${RG_BUILD_TARGET}" STREQUAL "RG_TARGET_TAB5")
-    set(COMPONENT_REQUIRES "${COMPONENT_REQUIRES} esp_lcd m5stack_tab5")
 endif()
 
 register_component()
