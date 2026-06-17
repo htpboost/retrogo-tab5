@@ -3,6 +3,20 @@
 Tab5 (ESP32-P4) で NES + SNES を動かすため、retro-go を Tab5 ターゲットとして移植する。
 エミュレータコア（nofrendo=NES, snes9x=SNES 等）は完成済みを流用し、**Tab5 のハード接続を新規に書く**のが作業の本体。
 
+## Git 管理
+- リモート: `origin = git@github.com:htpboost/retrogo-tab5.git`（SSH。HTTPSはworkflowスコープで弾かれるためSSH必須）、`upstream = github.com/rapha-tech/retro-go`
+- 作業ブランチ: `tab5-port`
+
+## Phase 1 確定事項（Tab5 表示 — 公式 m5stack_tab5 BSP より抽出済み）
+- パネル native = **720(H)×1280(V) 縦**（横向き 1280×720 は回転表示）。色 = **RGB565 16bpp LE**（retro-go内部と一致→変換不要）。
+- MIPI-DSI = **2レーン / 730 Mbps**。タイミング HSYNC10/HBP40/HFP40, VSYNC4/VBP16/VFP16。DPI clk ~78MHz。
+- パネルIC = ILI9881C / ST7123 を BSP が自動検出（手元実機は ST7123 世代の疑い）。
+- **アプローチ: タイミングを手書きせず公式 BSP `platforms/tab5/components/m5stack_tab5/` を retro-go に component として取り込む。**
+  - 主要ファイル: `m5stack_tab5.c`(bsp_display_new実体), `esp_lcd_st7123.c`, `include/bsp/ili9881_init_data.c`, `include/bsp/{display,config,esp-bsp,touch}.h`, `priv_include/esp_lcd_st7123.h`。依存: esp_lcd_st7121, GT911タッチ, IOエクスパンダ, 電源。
+  - API: `bsp_display_new_with_handles(&cfg,&handles)` → `esp_lcd_panel_handle_t`。描画 `esp_lcd_panel_draw_bitmap()`。輝度 `bsp_display_brightness_init()/set()`、`bsp_display_backlight_on()`。
+- `tab5_dsi.h` 実装方針: lcd_init=bsp_display_new+brightness_init+backlight_on / lcd_send_buffer=draw_bitmap(回転・拡大込み) / lcd_set_backlight=brightness_set。emulator出力(256×240等 RGB565)を1280×720領域へ整数倍 or 中央寄せ。
+- 参照ソースのローカル取得先: /tmp/tab5disp（esp_lcd_st7121.{c,h}, display.h, config.h, tree.json）。本番はBSPをupstream component registryからも取得可。
+
 ## ベース
 - フォーク: `rapha-tech/retro-go` ブランチ `ESP32-P4-clean`（issue ducalex/retro-go#211）
 - 置き場所: `~/M5Stack/TAB5/retro-go/`
