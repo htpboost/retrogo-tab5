@@ -50,10 +50,11 @@
 /****************************************************************************
  * Audio                                                                    *
  ****************************************************************************/
-// Tab5: 音声は ES8388 codec(I2S)。codec の I2C 設定は Phase4 で BSP(esp_codec_dev)を使う。
-// ここでは I2S ピンのみ Tab5 配線に合わせる(BCLK=27, WS/LRCK=29, DOUT=26)。MCLK=30 は BSP/Phase4 で扱う。
+// Tab5: 音声は ES8388 codec。Phase4 で BSP(esp_codec_dev=新i2s)に寄せる。
+// retro-go の音声はレガシー i2s ドライバを使い、BSPの新i2s(i2s_std)と同居すると
+// IDF5.5 が "i2s(legacy): CONFLICT!" で abort する。Phase1 は音声を無効化して回避。
 #define RG_AUDIO_USE_INT_DAC        0   // 0 = Disable
-#define RG_AUDIO_USE_EXT_DAC        1   // 0 = Disable, 1 = Enable
+#define RG_AUDIO_USE_EXT_DAC        0   // Phase1: 無効(レガシーi2sを入れない)。Phase4でBSP側に。
 #define RG_GPIO_SND_I2S_BCK         GPIO_NUM_27
 #define RG_GPIO_SND_I2S_WS          GPIO_NUM_29
 #define RG_GPIO_SND_I2S_DATA        GPIO_NUM_26
