@@ -38,6 +38,9 @@ static rg_keymap_serial_t keymap_serial[] = RG_GAMEPAD_SERIAL_MAP;
 #ifdef RG_GAMEPAD_VIRT_MAP
 static rg_keymap_virt_t keymap_virt[] = RG_GAMEPAD_VIRT_MAP;
 #endif
+#ifdef RG_GAMEPAD_TOUCH_TAB5
+#include "drivers/input/tab5_touch.h"
+#endif
 static bool input_task_running = false;
 static uint32_t gamepad_state = -1; // _Atomic
 static uint32_t gamepad_mapped = 0;
@@ -131,6 +134,10 @@ bool rg_input_read_gamepad_raw(uint32_t *out)
         if (gpio_get_level(mapping->num) == mapping->level)
             state |= mapping->key;
     }
+#endif
+
+#if defined(RG_GAMEPAD_TOUCH_TAB5)
+    state |= tab5_touch_read_keys();
 #endif
 
 #if defined(RG_GAMEPAD_I2C_MAP)
