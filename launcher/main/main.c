@@ -214,6 +214,11 @@ static void retro_loop(void)
     if (!gui_get_current_tab())
         gui.selected_tab = 0;
     tab = gui_set_current_tab(gui.selected_tab);
+    // 起動時からブラウズモード(ゲーム一覧表示)にする。
+    // retro-goランチャーはタブごとに「プレビュー(ロゴ)」と「ブラウズ(一覧)」の2状態があり、
+    // 通常はプレビューで起動し、入力でブラウズに切り替える。入力未実装でも一覧を見せるため強制ON。
+    // ループ初回で gui.browse!=browse_last により gui_init_tab(スキャン)+TAB_ENTER(反映)+redraw が走る。
+    gui.browse = true;
 
     while (true)
     {
