@@ -21,6 +21,7 @@
 #include <esp_lcd_panel_ops.h>
 #include <esp_lcd_mipi_dsi.h>
 #include "bsp/esp-bsp.h"
+#include "bsp/m5stack_tab5.h" // bsp_i2c_init / bsp_i2c_get_handle / bsp_io_expander_pi4ioe_init
 
 #if defined(RG_SCREEN_ROTATE) && RG_SCREEN_ROTATE != 0
 #warning "tab5_dsi: RG_SCREEN_ROTATE は未対応(回転は別途実装予定)。0 推奨。"
@@ -111,6 +112,16 @@ static void lcd_init(void)
     }
 
     s_trans_done = xSemaphoreCreateBinary();
+
+    // ★重要: Tab5 の ILI9881C パネルはリセットしないと「詰まった」状態から復帰できない。
+    // retro-go/BSP の DPI 初期化は reset_gpio=-1 でハードリセットしないため、一度パネルが
+    // 詰まると次回以降 esp_lcd_panel_init(ベンダ初期化コマンド送信)で無限ハングする。
+    // 公式 M5Unified と同様、表示初期化の前に IO エクスパンダ(PI4IOE)経由でパネルをリセットする。
+    // bsp_io_expander_pi4ioe_init はエクスパンダの chip-reset で LCD_RST を一旦 Low にし(=パネルreset)、
+    // 続けて OUT_SET で High に戻す(=reset解除)。これで詰まったパネルも確実に復帰する。
+    bsp_i2c_init(); // 冪等
+    bsp_io_expander_pi4ioe_init(bsp_i2c_get_handle());
+    rg_usleep(20 * 1000); // パネルがreset解除後に安定するまで待つ
 
     // BSP が表示IC自動検出 → DSIバス/DPIパネル生成 → disp_on + brightness_init まで実施
     bsp_lcd_handles_t handles = {0};
